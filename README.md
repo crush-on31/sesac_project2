@@ -10,7 +10,7 @@
   동시에 국내 주식을 시각화하여 직관적이고 효율적인 데이터분석 경험을 사용자에게 제공합니다.
   
 
-
+- 팀 이름: 띠모임
 - 팀원 소개
 > ![team member image](https://github.com/user-attachments/assets/da2b3706-3410-4a8b-8478-d6e07e929563)
 
