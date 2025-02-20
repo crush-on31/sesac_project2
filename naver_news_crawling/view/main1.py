@@ -86,7 +86,7 @@ with col2:
 
 # 두 번째 열에 이미지 배치
 with col1:
-    st.image(r"C:\Users\msdus\project2\dashboard_project3\naver_news_crawling\view\002.png", use_column_width=True)
+    st.image(r"C:\Users\msdus\project2\dashboard_project3\naver_news_crawling\view\002.png", use_container_width=True)
 
 # CSS 스타일 정의
 button_style = """
