@@ -4,12 +4,16 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import seaborn as sns
 
 plt.rcParams.update({'axes.titlesize': 14, 'font.size': 10})
 
+font_path = r"C:\Users\msdus\Downloads\font\Pretendard-Regular.otf"
+fontprop = fm.FontProperties(fname=font_path)
+
 # Set font for Matplotlib
 def set_korean_font():
-    plt.rcParams['font.family'] = 'Malgun Gothic'  # Replace with 'Malgun Gothic' if on Windows
+    plt.rcParams['font.family'] = 'Pretendard-Regular'  # Replace with 'Malgun Gothic' if on Windows
     plt.rcParams['axes.unicode_minus'] = False  # Fix negative sign display issue
 
 try:
@@ -81,7 +85,7 @@ def render_page(change_page):
         st.write("")
         
         # 첫 번째 열 삭제
-        stock_data = stock_data.iloc[:, 1:]
+        stock_data = stock_data.iloc[:, 1:-1]
         st.dataframe(stock_data.head())  # Display modified data
 
         # Process numeric data
@@ -108,13 +112,22 @@ def render_page(change_page):
         # 상위 20개 종목만 선택
         limited_stock_data = stock_data.head(20)
 
+        # 첫 번째 그래프를 위한 cubehelix 팔레트 생성
+        colorp1 = sns.cubehelix_palette(n_colors=len(limited_stock_data), start=.5, rot=-.75)
+
         fig1, ax1 = plt.subplots(figsize=(9, 6))
-        ax1.plot(limited_stock_data['종목명'], limited_stock_data['현재가'], marker='o', linestyle='-', color='b')
-        ax1.set_title("시간에 따른 주가 변화", fontsize=16)  # Direct fontsize 설정
-        ax1.set_xlabel("종목명", fontsize=14)
-        ax1.set_ylabel("현재가", fontsize=14)
+        # 전체 데이터를 한 번에 플로팅
+        ax1.plot(limited_stock_data['종목명'], limited_stock_data['현재가'], marker='o', linestyle='-', color=colorp1[10])
+
+        # 각 데이터 포인트에 대해 색상만 변경
+        for i, (name, price) in enumerate(zip(limited_stock_data['종목명'], limited_stock_data['현재가'])):
+            ax1.plot(name, price, marker='o', color=colorp1[i])
+
+        ax1.set_title("시간에 따른 주가 변화", fontsize=16, fontproperties=fontprop)  # Direct fontsize 설정
+        ax1.set_xlabel("종목명", fontsize=14, fontproperties=fontprop)
+        ax1.set_ylabel("현재가", fontsize=14, fontproperties=fontprop)
         ax1.set_xticks(range(len(limited_stock_data['종목명'])))
-        ax1.set_xticklabels(limited_stock_data['종목명'], rotation=45, ha='right', fontsize=10)
+        ax1.set_xticklabels(limited_stock_data['종목명'], rotation=45, ha='right', fontsize=10, fontproperties=fontprop)
         ax1.grid(True)
         plt.tight_layout()
         st.pyplot(fig1)
@@ -123,14 +136,18 @@ def render_page(change_page):
         st.write("")  # Add blank line
         st.markdown("<br>", unsafe_allow_html=True)  # Add HTML-style line break
 
+        # 두 번째 그래프를 위한 cubehelix 팔레트 생성
+        colorp2 = sns.cubehelix_palette(n_colors=10, start=2, rot=.5)
+
         st.subheader("거래량 상위 10 종목(막대 그래프)")
         top_10 = stock_data.nlargest(10, '거래량')
         fig2, ax2 = plt.subplots(figsize=(9, 6))
-        ax2.bar(top_10['종목명'], top_10['거래량'], color='#4285F4')
-        ax2.set_title("거래량 상위 10 종목")  # 폰트 크기 개별 설정
-        ax2.set_xlabel("종목명", fontsize=12)
-        ax2.set_ylabel("거래량", fontsize=12)
-        ax2.tick_params(axis='x', rotation=45)
+        ax2.bar(top_10['종목명'], top_10['거래량'], color=colorp2)
+        ax2.set_title("거래량 상위 10 종목", fontproperties=fontprop)  # 폰트 크기 개별 설정
+        ax2.set_xlabel("종목명", fontsize=12, fontproperties=fontprop)
+        ax2.set_ylabel("거래량", fontsize=12, fontproperties=fontprop)
+        ax2.tick_params(axis='x', rotation=45, labelsize=10)
+        ax2.set_xticklabels(ax2.get_xticklabels(), fontproperties=fontprop)
         st.pyplot(fig2)
 
         # Add spacing between graphs
@@ -138,9 +155,11 @@ def render_page(change_page):
         st.markdown("<br>", unsafe_allow_html=True)  # Add HTML-style line break
 
         st.subheader("거래량 상위 10 종목 비율(파이 차트)")
-        fig3, ax3 = plt.subplots(figsize=(8.5, 12))
-        ax3.pie(top_10['거래량'], labels=top_10['종목명'], autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors)
-        ax3.set_title("거래량 상위 10 종목 비율")  # 폰트 크기 개별 설정
+        fig3, ax3 = plt.subplots(figsize=(10, 6))
+        ax3.pie(top_10['거래량'], labels=top_10['종목명'], autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors,
+        pctdistance=0.85,  # 퍼센트 텍스트를 중심에서 바깥쪽으로 이동
+        textprops={'fontproperties': fontprop, 'fontsize': 8})
+        ax3.set_title("거래량 상위 10 종목 비율", fontproperties=fontprop, fontsize=16)  # 폰트 크기 개별 설정
         st.pyplot(fig3)
 
     except Exception as e:

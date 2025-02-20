@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
 # 페이지 설정
 st.set_page_config(page_title="Today's news briefing", page_icon=":newspaper:", layout="wide")
-st.image(r"C:\Users\msdus\project2\dashboard_project3\naver_news_crawling\view\002.png", width=500)
+st.image(r"C:\Users\msdus\project2\dashboard_project3\naver_news_crawling\view\002.png", width=300, use_column_width=True)
 
 # CSS 스타일 정의
 button_style = """

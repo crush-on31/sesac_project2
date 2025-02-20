@@ -23,6 +23,7 @@ def apply_custom_styles():
     }
     </style>
     """
+
 # tab 스타일 삽입
 def apply_tab_styles():
     return  """
